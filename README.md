@@ -2,6 +2,10 @@
 
 Chess engine written in Zig
 
+> **Note**
+>
+> This repository contains work-in-progress. Any code, documentation, etc. should be considered as such and not taken at face value.
+
 ## Implementation
 
 ### Board representation
