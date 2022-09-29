@@ -16,15 +16,31 @@ pub fn main() anyerror!void {
     var args_it = try std.process.argsWithAllocator(allocator);
     defer args_it.deinit();
 
+    const file = try std.fs.cwd().openFile("log.txt", .{ .mode = .write_only });
+    defer file.close();
+    _ = try file.seekFromEnd(0);
+
+    _ = try file.writeAll("New invocation\n");
+    _ = try file.writeAll("args:\n");
+
     // skip the executable name
     _ = args_it.skip();
 
     var ran_command = false;
 
     if (args_it.next()) |arg| {
+        try file.writer().print("arg: {s}\n", .{arg});
         if (std.mem.eql(u8, "cli", arg)) {
             try Cli.run();
             ran_command = true;
+        }
+    }
+
+    const stdin = std.io.getStdIn().reader();
+    while (true) {
+        const input = try stdin.readUntilDelimiterOrEofAlloc(allocator, '\n', 1024);
+        if (input) |data| {
+            try file.writer().print("stdin: [{s}]\n", .{data});
         }
     }
 
