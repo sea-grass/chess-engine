@@ -1,3 +1,5 @@
+const bitSet = @import("../bitboard.zig").bitSet;
+
 var black_king_bitboard: u64 = 0b0000100000000000000000000000000000000000000000000000000000000000;
 var black_queen_bitboard: u64 = 0b0001000000000000000000000000000000000000000000000000000000000000;
 var black_rook_bitboard: u64 = 0b1000000100000000000000000000000000000000000000000000000000000000;
@@ -35,10 +37,6 @@ fn whitePieces() u64 {
 
 fn emptySquares() u64 {
     return ~(whitePieces() | blackPieces());
-}
-
-fn bitSet(bb: u64, idx: u6) bool {
-  return ((bb >> idx) % 2) != 0;
 }
 
 pub fn printBoard(writer: anytype) !void {

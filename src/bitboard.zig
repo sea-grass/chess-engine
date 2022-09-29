@@ -25,3 +25,7 @@ pub fn printBitboard(bitboard: Bitboard, writer: anytype) !void {
         }
     }
 }
+
+pub fn bitSet(bb: u64, idx: u6) bool {
+  return ((bb >> idx) % 2) != 0;
+}
