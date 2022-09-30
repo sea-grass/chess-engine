@@ -8,6 +8,13 @@ const Moves = @import("chess/moves.zig");
 const Board = @import("chess/board.zig");
 const Rook = @import("chess/rook.zig");
 const Cli = @import("cli.zig");
+const XBoard = @import("xboard.zig");
+
+const Command = enum(u8) {
+    cli,
+    help,
+    xboard,
+};
 
 pub fn main() anyerror!void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -16,37 +23,34 @@ pub fn main() anyerror!void {
     var args_it = try std.process.argsWithAllocator(allocator);
     defer args_it.deinit();
 
-    const file = try std.fs.cwd().openFile("log.txt", .{ .mode = .write_only });
-    defer file.close();
-    _ = try file.seekFromEnd(0);
-
-    _ = try file.writeAll("New invocation\n");
-    _ = try file.writeAll("args:\n");
+    var command: Command = undefined;
 
     // skip the executable name
     _ = args_it.skip();
 
-    var ran_command = false;
-
+    // command name is the first argument
     if (args_it.next()) |arg| {
-        try file.writer().print("arg: {s}\n", .{arg});
         if (std.mem.eql(u8, "cli", arg)) {
-            try Cli.run();
-            ran_command = true;
+            command = .cli;
+        } else if (std.mem.eql(u8, "xboard", arg)) {
+            command = .xboard;
         }
     }
 
-    const stdin = std.io.getStdIn().reader();
-    while (true) {
-        const input = try stdin.readUntilDelimiterOrEofAlloc(allocator, '\n', 1024);
-        if (input) |data| {
-            try file.writer().print("stdin: [{s}]\n", .{data});
-        }
+    // parse arguments for command
+    var command_args = std.ArrayList([]const u8).init(allocator);
+    defer command_args.deinit();
+    while (args_it.next()) |arg| {
+        try command_args.append(arg);
     }
 
-    if (!ran_command) {
-        try testing();
+    switch (command) {
+        .cli => try Cli.run(allocator, command_args.items),
+        .xboard => try XBoard.run(allocator, command_args.items),
+        else => try stdout.print("I want to run command\n", .{}),
     }
+
+    try testing();
 }
 
 fn testing() !void {

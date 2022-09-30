@@ -72,11 +72,6 @@ However, these seems pretty complicated. A simpler approach might see repeated b
 
 ### Supporting Xboard (aka CECP or Winboard) protocol
 
-ChessX will launch the binary and send the following over stdin:
+Supporting the XBoard protocol is important because it lets me integrate the engine into existing tools, rather than have it exist on its own.
 
-```
-xboard
-protover 2
-```
-
-That much I was able to figure out. But I'm guessing it expects a response after it sends me these commands. I tried the chessprogramming wiki, but I haven't been able to really find a spec for the protocol. I may have to start searching up keywords and look at other engines for insight. The source for [belofte](https://sourceforge.net/p/belofte) (written in C++) seems promising.
+During development, I can reference the [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page), the [Chess Engine Communication Protocol](http://hgm.nubati.net/newspecs.html), and the source for [belofte](https://sourceforge.net/p/belofte) (written in C++).
