@@ -6,6 +6,31 @@ Chess engine written in Zig
 >
 > This repository contains work-in-progress. Any code, documentation, etc. should be considered as such and not taken at face value.
 
+## Roadmap
+
+Following is a list of modules/features that I plan to implement in this engine:
+
+- [ ] xboard server interface
+- [ ] game format marshal (PGN, FEN, or otherwise)
+- [ ] chess game data structure
+- [ ] move validator
+- [ ] move generator
+- [ ] position evaluator
+- [ ] move search
+- [ ] read/write chess databases
+
+## Implementation
+
+## Data structure
+
+The data structure needs to represent the game state at a point in time, the game state history, and potentially branches of moves. To support looking backward and forward, it should also store the current point in time.
+
+It needs to support saving/loading a snapshot of the state and loading from existing chess game formats. It must expose methods to query and mutate the game state. 
+
+## Xboard interface
+
+The engine must be able to act as a REPL according to the xboard spec. Commands received through the xboard interface may involve cancelling ongoing work (such as searching for an optimal move)
+
 ## Implementation
 
 ### Board representation
