@@ -5,7 +5,7 @@ const printBitboard = @import("../bitboard.zig").printBitboard;
 const King = @import("../chess/king.zig");
 const Knight = @import("../chess/knight.zig");
 const Moves = @import("../chess/moves.zig");
-const Board = @import("../chess/board.zig");
+const Board = @import("../chess/board.zig").Board;
 const Rook = @import("../chess/rook.zig");
 
 const Command = struct { code: []const u8, name: []const u8 };
@@ -34,6 +34,7 @@ pub fn run(_: Allocator, _: [][]const u8) !void {
 fn testing() !void {
     const bb = 1 << 13;
     const stdout = std.io.getStdOut().writer();
+    var board = Board{};
 
     try stdout.print("origin\n", .{});
     try printBitboard(bb, stdout);
@@ -46,7 +47,7 @@ fn testing() !void {
     try printBitboard(Knight.moves(bb), stdout);
 
     try stdout.print("Chess board\n", .{});
-    try Board.printBoard(stdout);
+    try board.printBoard(stdout);
 
     try stdout.print("Rook moves\n", .{});
     try printBitboard(Rook.moves(bb), stdout);
