@@ -1,14 +1,12 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const BB = @import("chess/bitboards.zig");
-const printBitboard = @import("bitboard.zig").printBitboard;
-const King = @import("chess/king.zig");
-const Knight = @import("chess/knight.zig");
-const Moves = @import("chess/moves.zig");
-const Board = @import("chess/board.zig");
-const Rook = @import("chess/rook.zig");
-const Cli = @import("cli.zig");
-const XBoard = @import("xboard.zig");
+const BB = @import("../chess/bitboards.zig");
+const printBitboard = @import("../bitboard.zig").printBitboard;
+const King = @import("../chess/king.zig");
+const Knight = @import("../chess/knight.zig");
+const Moves = @import("../chess/moves.zig");
+const Board = @import("../chess/board.zig");
+const Rook = @import("../chess/rook.zig");
 
 const Command = struct { code: []const u8, name: []const u8 };
 
