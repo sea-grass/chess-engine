@@ -1,5 +1,14 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
+const BB = @import("chess/bitboards.zig");
+const printBitboard = @import("bitboard.zig").printBitboard;
+const King = @import("chess/king.zig");
+const Knight = @import("chess/knight.zig");
+const Moves = @import("chess/moves.zig");
+const Board = @import("chess/board.zig");
+const Rook = @import("chess/rook.zig");
+const Cli = @import("cli.zig");
+const XBoard = @import("xboard.zig");
 
 const Command = struct { code: []const u8, name: []const u8 };
 
@@ -20,4 +29,27 @@ pub fn run(_: Allocator, _: [][]const u8) !void {
     if (std.mem.eql(u8, line, command.code)) {
         try stdout.print("running {s}\n", .{command.name});
     }
+
+    try testing();
+}
+
+fn testing() !void {
+    const bb = 1 << 13;
+    const stdout = std.io.getStdOut().writer();
+
+    try stdout.print("origin\n", .{});
+    try printBitboard(bb, stdout);
+
+    // const king_moves = King.moves(bb);
+    // try stdout.print("king moves\n", .{});
+    // try printBitboard(king_moves, stdout);
+
+    try stdout.print("knight moves\n", .{});
+    try printBitboard(Knight.moves(bb), stdout);
+
+    try stdout.print("Chess board\n", .{});
+    try Board.printBoard(stdout);
+
+    try stdout.print("Rook moves\n", .{});
+    try printBitboard(Rook.moves(bb), stdout);
 }
