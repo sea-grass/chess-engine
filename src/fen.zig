@@ -1,4 +1,6 @@
 const std = @import("std");
+const CastlingRights = @import("fen/castling_rights.zig").CastlingRights;
+const EnPassant = @import("fen/en_passant.zig").EnPassant;
 
 const Colour = enum {
     White,
@@ -14,12 +16,12 @@ const ParseError = error{
 const FEN = struct {
     board: []const u8,
     active_colour: Colour,
-    castling: []const u8,
-    en_passant: []const u8,
+    castling: CastlingRights,
+    en_passant: EnPassant,
     halfmove_clock: []const u8,
     fullmove_number: []const u8,
 
-    pub fn parse(fen_str: []const u8) ParseError!FEN {
+    pub fn parse(fen_str: []const u8) !FEN {
         var it = std.mem.tokenize(u8, fen_str, " ");
 
         var board = it.next() orelse return ParseError.InvalidFEN;
@@ -46,45 +48,51 @@ const FEN = struct {
                 }
             }
         }
-        var castling_rights = it.next() orelse return ParseError.InvalidFEN;
-        var possible_en_passant_targets = it.next() orelse return ParseError.InvalidFEN;
-        var halfmove_clock = it.next() orelse return ParseError.InvalidFEN;
-        var fullmove_number = it.next() orelse return ParseError.InvalidFEN;
-        if (it.next()) |_| return ParseError.InvalidFEN;
 
-        return .{
+        const fen = .{
             .board = board,
             .active_colour = active_colour,
-            .castling = castling_rights,
-            .en_passant = possible_en_passant_targets,
-            .halfmove_clock = halfmove_clock,
-            .fullmove_number = fullmove_number,
+            .castling = try CastlingRights.parse(it.next() orelse return ParseError.InvalidFEN),
+            .en_passant = try EnPassant.parse(it.next() orelse return ParseError.InvalidFEN),
+            .halfmove_clock = it.next() orelse return ParseError.InvalidFEN,
+            .fullmove_number = it.next() orelse return ParseError.InvalidFEN,
         };
+
+        // if there are additional symbols, the input is considered invalid.
+        if (it.next()) |_| return ParseError.InvalidFEN;
+
+        return fen;
     }
+
+    test "import FEN" {
+        const fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+        const fen = try FEN.parse(fen_str);
+        std.debug.print("\n{s}\n", .{fen.board});
+        std.debug.print("active: {}\n", .{fen.active_colour});
+        std.debug.print("castling rights: {}\n", .{fen.castling});
+        std.debug.print("en passant: {}\n", .{fen.en_passant});
+        std.debug.print("halfmove clock: {s}\n", .{fen.halfmove_clock});
+        std.debug.print("fullmove number: {s}\n", .{fen.fullmove_number});
+    }
+
+    test "too short FEN" {
+        const invalid_fen = "";
+        const result = FEN.parse(invalid_fen);
+        try std.testing.expectError(ParseError.InvalidFEN, result);
+    }
+
+    test "too long FEN" {
+        const invalid_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" ++ " some extra stuff";
+        const result = FEN.parse(invalid_fen);
+        try std.testing.expectError(ParseError.InvalidFEN, result);
+    }
+
+    test "export FEN" {}
 };
 
-test "import FEN" {
-    const fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
-    const fen = try FEN.parse(fen_str);
-    std.debug.print("\n{s}\n", .{fen.board});
-    std.debug.print("active: {}\n", .{fen.active_colour});
-    std.debug.print("castling rights: {s}\n", .{fen.castling});
-    std.debug.print("en passant: {s}\n", .{fen.en_passant});
-    std.debug.print("halfmove clock: {s}\n", .{fen.halfmove_clock});
-    std.debug.print("fullmove number: {s}\n", .{fen.fullmove_number});
+test {
+    _ = FEN;
+    _ = CastlingRights;
+    _ = EnPassant;
 }
-
-test "too short FEN" {
-    const invalid_fen = "";
-    const result = FEN.parse(invalid_fen);
-    try std.testing.expectError(ParseError.InvalidFEN, result);
-}
-
-test "too long FEN" {
-    const invalid_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" ++ " some extra stuff";
-    const result = FEN.parse(invalid_fen);
-    try std.testing.expectError(ParseError.InvalidFEN, result);
-}
-
-test "export FEN" {}
