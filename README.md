@@ -19,6 +19,18 @@ Following is a list of modules/features that I plan to implement in this engine:
 - [ ] move search
 - [ ] read/write chess databases
 
+### Milestones
+
+#### 1. Board Visualizer
+
+The board visualizer takes a board definition as a string and prints a visual representation of the board. It has a CLI mode and a REPL mode.
+
+In CLI mode, it receives a FEN definition either through a filename or over stdin. It will print a nice visual of the board to stdout and return. It will achieve a colour-coded output using ansi escape codes, which can be toggled off using the `FORCE_COLOR` environment variable (which might be beneficial if you are piping the output to another program or to a file, for example).
+
+In REPL mode, also known as interactive mode, it may be seeded with a FEN definition from a file (but not through stdin, since it's reserved for interpreting REPL commands). At which point it will print the visualization of the board and prompt for further commands. Commands include moving a piece on the board to another spot on the board (irrespective of actual chess rules), removing a piece/pieces from the board, adding pieces to the board, and printing out the resulting FEN. Interactive mode also supports flags to toggle automatic board visualization off, and only printing it or the resulting FEN when prompted by user command. This may be useful to produce a board representation through successive commands, for example reproducing board state given the movelist from a game.
+
+#### 2. TBD
+
 ## Implementation
 
 ## Data structure
